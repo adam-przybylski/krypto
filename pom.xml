@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pl.crypto</groupId>
+  <artifactId>Krypto</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+      <module>Model</module>
+      <module>View</module>
+ </modules>
+
+
+  <name>Krypto</name>
+  <url>http://maven.apache.org</url>
+
+<developers>
+    <developer>
+        <id>242489</id>
+        <name>Jakub Pazio</name>
+        <email>242489@edu.p.lodz.pl</email>
+    </developer>
+    <developer>
+        <id>242506</id>
+        <name>Adam Przybylski</name>
+        <email>2422506@edu.p.lodz.pl</email>
+    </developer>
+</developers>
+
+<description>Projekt na zaliczenie przedmiotu podstawy kryptografii</description>
+
+<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <junit.version>5.8.2</junit.version>
+</properties>
+
+<build>
+    <plugins>
+    </plugins>
+</build>
+
+<dependencies>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>5.7.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+</project>
