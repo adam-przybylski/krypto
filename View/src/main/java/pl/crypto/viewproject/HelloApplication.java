@@ -12,10 +12,15 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader =
                 new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle(Test.str);
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setTitle("Cryptography Project");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void switchScene(Stage stage, String fxml) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxml));
+        stage.getScene().setRoot(fxmlLoader.load());
     }
 
     public static void main(String[] args) {
