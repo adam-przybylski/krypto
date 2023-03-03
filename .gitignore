@@ -35,3 +35,5 @@ build/
 *.txt
 *.log
 *.trace.db
+*.pdf
+
