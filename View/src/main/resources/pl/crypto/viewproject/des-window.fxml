@@ -4,12 +4,26 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.crypto.viewproject.DesController">
    <children>
-      <TextField layoutX="68.0" layoutY="73.0" />
-      <Button layoutX="236.0" layoutY="73.0" mnemonicParsing="false" text="Button" />
-      <TextArea layoutX="62.0" layoutY="248.0" prefHeight="200.0" prefWidth="200.0" />
+      <TextField layoutX="68.0" layoutY="73.0" promptText="Key" />
+      <Button layoutX="236.0" layoutY="73.0" mnemonicParsing="false" text="Generate key" />
+      <TextArea fx:id="inputTextArea" layoutX="23.0" layoutY="148.0" prefHeight="200.0" prefWidth="300.0" promptText="Input text" wrapText="true" />
+      <Button fx:id="encryptButton" layoutX="372.0" layoutY="161.0" mnemonicParsing="false" onAction="#onEncryptButtonClick" text="Encrypt" />
+      <TextArea fx:id="outputTextArea" layoutX="477.0" layoutY="148.0" prefHeight="200.0" prefWidth="300.0" promptText="Output text" wrapText="true" />
+      <Button fx:id="decryptButton" layoutX="371.0" layoutY="203.0" mnemonicParsing="false" onAction="#onDecryptButtonClick" text="Decrypt" />
+      <Text layoutX="323.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DES Algorithm">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Text>
+      <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onBackButtonClick" text="Go back" />
+      <TextField fx:id="inputFileTextField" layoutX="23.0" layoutY="457.0" promptText="File path" />
+      <Button fx:id="chooseFileButton" layoutX="23.0" layoutY="416.0" mnemonicParsing="false" onAction="#onChooseFileButtonClick" text="Choose file" />
+      <Button fx:id="encryptfFileButton" layoutX="372.0" layoutY="416.0" mnemonicParsing="false" onAction="#onEncryptFileButtonClick" text="Encrypt" />
+      <Button fx:id="decryptFileButton" layoutX="371.0" layoutY="470.0" mnemonicParsing="false" onAction="#onDecryptFileButtonClick" text="Decrypt" />
    </children>
 </Pane>
