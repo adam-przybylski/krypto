@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -41,9 +42,13 @@ public class DesController implements Initializable {
 
     @FXML
     protected void onEncryptButtonClick() throws IOException {
-        byte[] byteTextArrray = inputTextArea.getText().getBytes();
+        byte[] byteTextArray = inputTextArea.getText().getBytes();
         byte[] byteKeyArray = inputKeyTextField.getText().getBytes();
-        outputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArray)));
+
+        
+        String output = new String(Des.encrypt(byteTextArray, byteKeyArray));
+        BigInteger[] res =  Des.createBlocks(byteTextArray);
+        outputTextArea.setText(output);
     }
 
     @FXML
