@@ -15,11 +15,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import pl.crypto.model.Des;
 
 public class DesController implements Initializable {
 
     @FXML
     private TextArea inputTextArea;
+    @FXML
+    private TextField inputKeyTextField;
 
     @FXML
     private Button encryptButton;
@@ -37,15 +40,17 @@ public class DesController implements Initializable {
     private TextField inputFileTextField;
 
     @FXML
-    protected void onEncryptButtonClick() {
-        byte[] byteArrray = inputTextArea.getText().getBytes();
-        outputTextArea.setText(new String(byteArrray));
+    protected void onEncryptButtonClick() throws IOException {
+        byte[] byteTextArrray = inputTextArea.getText().getBytes();
+        byte[] byteKeyArray = inputKeyTextField.getText().getBytes();
+        outputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArray)));
     }
 
     @FXML
-    protected void onDecryptButtonClick(){
-        byte[] byteArrray = outputTextArea.getText().getBytes();
-        inputTextArea.setText(new String(byteArrray));
+    protected void onDecryptButtonClick() throws IOException {
+        byte[] byteTextArrray = outputTextArea.getText().getBytes();
+        byte[] byteKeyArrray = inputKeyTextField.getText().getBytes();
+        inputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArrray)));
     }
 
     @FXML
