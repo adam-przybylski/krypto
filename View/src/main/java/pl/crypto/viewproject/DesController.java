@@ -3,7 +3,6 @@ package pl.crypto.viewproject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -19,7 +18,6 @@ import javafx.stage.Stage;
 import pl.crypto.model.Des;
 
 public class DesController implements Initializable {
-
     @FXML
     private TextArea inputTextArea;
     @FXML
@@ -42,13 +40,15 @@ public class DesController implements Initializable {
 
     @FXML
     protected void onEncryptButtonClick() throws IOException {
-        byte[] byteTextArray = inputTextArea.getText().getBytes();
-        byte[] byteKeyArray = inputKeyTextField.getText().getBytes();
+        String byteTextArray = inputTextArea.getText();
+        String byteKeyArray = inputKeyTextField.getText();
 
-        
-        String output = new String(Des.encrypt(byteTextArray, byteKeyArray));
-        BigInteger[] res =  Des.createBlocks(byteTextArray);
-        outputTextArea.setText(output);
+
+        BigInteger res =  Des.stringToBigInt(byteTextArray);
+
+        String backAndForth = Des.bigIntToString(res);
+
+        outputTextArea.setText(backAndForth);
     }
 
     @FXML
