@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -42,14 +43,15 @@ public class DesController implements Initializable {
     protected void onEncryptButtonClick() throws IOException {
         String byteTextArray = inputTextArea.getText();
         String byteKeyArray = inputKeyTextField.getText();
-        byte [] byteArray = byteTextArray.getBytes();
-        byte[][] xd = Des.createBlocks(byteArray);
+        byte[] byteArray = byteTextArray.getBytes();
+        byte[][] byteBlocksArray = Des.createBlocks(byteArray);
 
-        BigInteger res =  Des.stringToBigInt(byteTextArray);
+        BigInteger[] bigIntTab = Des.byteBlockArrayToBigIntArray(byteBlocksArray);
 
-        String backAndForth = Des.bigIntToString(res);
+        byte[][] newBlocksArray = Des.bigIntArrayToByteBlockArray(bigIntTab);
 
-        outputTextArea.setText(backAndForth);
+
+        outputTextArea.setText(Des.byteBlockArrayToString(newBlocksArray));
     }
 
     @FXML

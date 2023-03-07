@@ -3,8 +3,6 @@ package pl.crypto.model;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.jar.JarException;
 
 public class Des {
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -23,7 +21,9 @@ public class Des {
         } else if (s.length() < 2) {
             return null;
         } else {
-            if (s.length() % 2 != 0) s += '0';
+            if (s.length() % 2 != 0) {
+                s += '0';
+            }
             int dl = s.length() / 2;
             byte[] wynik = new byte[dl];
             for (int i = 0; i < dl; i++) {
@@ -52,11 +52,71 @@ public class Des {
     }
 
 
+    public static BigInteger[] byteBlockArrayToBigIntArray(byte[][] input) {
+        BigInteger[] bigIntArray = new BigInteger[input.length];
+        for (int i = 0; i < input.length ; i++) {
+            bigIntArray[i] = new BigInteger(input[i]);
+        }
+        return bigIntArray;
+    }
+
+    public static byte[][] bigIntArrayToByteBlockArray(BigInteger[] input) {
+        byte[][] byteBlockArray = new byte[input.length][8];
+        for (int i = 0; i < input.length ; i++) {
+            byteBlockArray[i] = input[i].toByteArray();
+        }
+        return byteBlockArray;
+    }
+
+    public static String byteBlockArrayToString(byte[][] input) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < input.length - 1; i++) {
+            builder.append(new String(input[i]));
+        }
+
+        int numberOfZeros = input[input.length - 1][7];
+
+        //obcięcie zer i dodanie pozostałych bajtów
+        byte[] lastBytes = new byte[8-numberOfZeros];
+
+        for (int i = 0; i < 8 - numberOfZeros; i++) {
+            lastBytes[i] = input[input.length-1][i];
+        }
+
+        builder.append(new String(lastBytes));
+        return builder.toString();
+    }
+
+
+    public static byte[][] createBlocks(byte[] input) {
+        int inputLen = input.length;
+        // We need blocks to fit all bytes
+        int blockAmount = inputLen / 8 + 1;
+        byte[][] result = new byte[blockAmount][8];
+
+        for (int i = 0; i < blockAmount - 1; i++) {
+            for (int j = 0; j < 8; j++) {
+                result[i][j] = input[8 * i + j];
+            }
+        }
+
+        for (int i = 0; i < inputLen % 8; i++) {
+            result[blockAmount - 1][i] = input[(blockAmount - 1) * 8 + i];
+        }
+
+        // W ostatnim bajcie dopisujemy ile bajtów paddingu dodaliśmy
+        result[blockAmount - 1][7] = (byte) (8 - (inputLen % 8));
+        return result;
+    }
+
+
     //konwertuje stringa na BigIntegera
     public static BigInteger stringToBigInt(String str) {
         byte[] tab = new byte[str.length()];
-        for (int i = 0; i < tab.length; i++)
+        for (int i = 0; i < tab.length; i++) {
             tab[i] = (byte) str.charAt(i);
+        }
         return new BigInteger(1, tab);
     }
 
@@ -64,28 +124,9 @@ public class Des {
     public static String bigIntToString(BigInteger n) {
         byte[] tab = n.toByteArray();
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < tab.length; i++)
+        for (int i = 0; i < tab.length; i++) {
             sb.append((char) tab[i]);
+        }
         return sb.toString();
-    }
-
-    public static byte[][] createBlocks(byte[] input) {
-        int inputLen = input.length;
-        // We need blocks to fit all bytes
-        int blockAmount = inputLen / 8 + 1;
-        byte[][] result = new byte[blockAmount][8];
-        for (int i = 0; i < blockAmount - 1; i++) {
-            for (int j = 0; j < 8; j++) {
-                result[i][j] = input[8 * i + j];
-            }
-        }
-        for (int i = 0; i < inputLen % 8; i++) {
-            result[blockAmount - 1][i] = input[(blockAmount - 1) * 8 + i];
-        }
-
-
-        // W ostatnim bajcie dopisujemy ile bajtów paddingu dodaliśmy
-        result[blockAmount - 1][7] = (byte) (8 - (inputLen % 8));
-        return result;
     }
 }
