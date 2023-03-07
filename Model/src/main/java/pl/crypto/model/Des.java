@@ -79,7 +79,7 @@ public class Des {
                 result[i][j] = input[8 * i + j];
             }
         }
-        for (int i = 0; i < (blockAmount - 1) + (8 - inputLen % 8); i++) {
+        for (int i = 0; i < inputLen % 8; i++) {
             result[blockAmount - 1][i] = input[(blockAmount - 1) * 8 + i];
         }
 
