@@ -42,7 +42,8 @@ public class DesController implements Initializable {
     protected void onEncryptButtonClick() throws IOException {
         String byteTextArray = inputTextArea.getText();
         String byteKeyArray = inputKeyTextField.getText();
-
+        byte [] byteArray = byteTextArray.getBytes();
+        byte[][] xd = Des.createBlocks(byteArray);
 
         BigInteger res =  Des.stringToBigInt(byteTextArray);
 

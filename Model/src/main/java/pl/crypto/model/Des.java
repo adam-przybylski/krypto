@@ -18,17 +18,19 @@ public class Des {
     }
 
     public static byte[] hexStringToByteArray(String s) throws UnsupportedEncodingException {
-            if (s == null) { return null;}
-            else if (s.length() < 2) { return null;}
-            else { if (s.length()%2!=0)s+='0';
-                int dl = s.length() / 2;
-                byte[] wynik = new byte[dl];
-                for (int i = 0; i < dl; i++)
-                { 
-                    wynik[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
-                }
-                return wynik;
+        if (s == null) {
+            return null;
+        } else if (s.length() < 2) {
+            return null;
+        } else {
+            if (s.length() % 2 != 0) s += '0';
+            int dl = s.length() / 2;
+            byte[] wynik = new byte[dl];
+            for (int i = 0; i < dl; i++) {
+                wynik[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
             }
+            return wynik;
+        }
     }
 
     public static String bytesToHex(byte[] bytes) {
@@ -37,13 +39,11 @@ public class Des {
         String initialHex = null;
         int initHexLength = 0;
 
-        for (int i = 0; i < rawData.length; i++)
-        {
+        for (int i = 0; i < rawData.length; i++) {
             int positiveValue = rawData[i] & 0x000000FF;
             initialHex = Integer.toHexString(positiveValue);
             initHexLength = initialHex.length();
-            while (initHexLength++ < 2)
-            {
+            while (initHexLength++ < 2) {
                 hexText.append("0");
             }
             hexText.append(initialHex);
@@ -53,21 +53,19 @@ public class Des {
 
 
     //konwertuje stringa na BigIntegera
-    public static BigInteger stringToBigInt(String str)
-    {
+    public static BigInteger stringToBigInt(String str) {
         byte[] tab = new byte[str.length()];
         for (int i = 0; i < tab.length; i++)
-            tab[i] = (byte)str.charAt(i);
-        return new BigInteger(1,tab);
+            tab[i] = (byte) str.charAt(i);
+        return new BigInteger(1, tab);
     }
 
     //konwertuje BigIntegera na string
-    public static String bigIntToString(BigInteger n)
-    {
+    public static String bigIntToString(BigInteger n) {
         byte[] tab = n.toByteArray();
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < tab.length; i++)
-            sb.append((char)tab[i]);
+            sb.append((char) tab[i]);
         return sb.toString();
     }
 
@@ -76,12 +74,18 @@ public class Des {
         // We need blocks to fit all bytes
         int blockAmount = inputLen / 8 + 1;
         byte[][] result = new byte[blockAmount][8];
-        for (int i = 0; i < blockAmount; i++) {
-            // Trzeba dokończyć TODO kopiowanie bloków
+        for (int i = 0; i < blockAmount - 1; i++) {
+            for (int j = 0; j < 8; j++) {
+                result[i][j] = input[8 * i + j];
+            }
+        }
+        for (int i = 0; i < (blockAmount - 1) + (8 - inputLen % 8); i++) {
+            result[blockAmount - 1][i] = input[(blockAmount - 1) * 8 + i];
         }
 
+
         // W ostatnim bajcie dopisujemy ile bajtów paddingu dodaliśmy
-        result[blockAmount-1][7] =  (byte) (8 - (inputLen % 8));
+        result[blockAmount - 1][7] = (byte) (8 - (inputLen % 8));
         return result;
     }
 }
