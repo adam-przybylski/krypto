@@ -50,13 +50,13 @@ public class Des {
             28, 29, 30, 31, 32, 1
     };
 
-    private static final int[] rotations = {
+    private static final int[] Rotations = {
             1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
     };
 
 
     // Substitution Box
-    private static final byte[][] S = {{
+    private static final byte[][] SubstitutionTable = {{
             14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
             0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8,
             4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0,
@@ -117,6 +117,7 @@ public class Des {
         long dst = 0;
         for (int i = 0; i < table.length; i++) {
             int srcPos = srcWidth - table[i];
+            // przesuwa "stare" bity w lewo i ustawia pojedynczy bit na nowej pozycji
             dst = (dst << 1) | (src >> srcPos & 0x01);
         }
         return dst;
@@ -164,20 +165,27 @@ public class Des {
     }
 
     private static byte SubBoxValue(int boxNumber, byte value) {
+        // 0x20 lewy skrajny bit 0x01 prawy skrajny bit 0x1E środkowe bity
+        // ta operacja daje nam indeks w jednowymiarowej tabeli który potrzebujemy !!!
         byte index = (byte) (value & 0x20 | ((value & 0x01) << 4) | ((value & 0x1E) >> 1));
-        return S[boxNumber - 1][index];
+        return SubstitutionTable[boxNumber - 1][index];
     }
 
     private static int round(int halfBlock, long key) {
+        // Z 32 bitowej połowy bloku robimy 48 bitowe pole
+        // bitowa maniupulacja aby rzutować na longa i mieć dobre bity w pamięci
         long expandedBlock = permute(ExpansionTable, 32, halfBlock & 0xFFFFFFFFL);
 
         long xored = expandedBlock ^ key;
 
+        // Substytucja po której z 48 bitów wejściowych otrzymamy 32 bity wyjściowe
         int returnHalfBlock = 0;
         // najpierw zapisujemy z "lewej strony inta, przsuwamy o 4 bity w lewo i dodajemy kolejne bity
         for (int i = 0; i < 8; i++) {
+            // 3 > ponieważ nie chcemy przesuwać znaku
             returnHalfBlock >>>= 4;
-            //TODO nauczyć się jak to dokładnie działa
+            // nauczyć się jak to dokładnie działa
+            // 3f = 0011111 czyli 6 "prawych bitów"
             int substituted = SubBoxValue(8 - 1, (byte) (xored & 0x3F));
             returnHalfBlock |= substituted << 28;
             xored >>= 6; //Przesuwamy liczbę o bity które użyliśmy
@@ -198,7 +206,7 @@ public class Des {
         int r = (int) (lKey & 0xFFFFFFF);
 
         for (int i = 0; i < 16; i++) {
-            if (rotations[i] == 1) {
+            if (Rotations[i] == 1) {
                 l = ((l << 1) & 0x0FFFFFF) | (l >> 27);
                 r = ((r << 1) & 0x0FFFFFF) | (r >> 27);
             } else {
