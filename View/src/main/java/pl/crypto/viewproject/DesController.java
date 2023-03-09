@@ -59,6 +59,10 @@ public class DesController implements Initializable {
         byte[] byteTextArrray = outputTextArea.getText().getBytes();
         byte[] byteKeyArrray = inputKeyTextField.getText().getBytes();
         inputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArrray)));
+
+        BigInteger b = new BigInteger("1");
+        BigInteger b1 = b.flipBit(0);
+        BigInteger b2 = b.flipBit(1);
     }
 
     @FXML

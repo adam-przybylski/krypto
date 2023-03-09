@@ -7,48 +7,78 @@ import java.math.BigInteger;
 public class Des {
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
+    private static final int[] IP ={
+            58, 50, 42, 34, 26, 18, 10, 2,
+            60, 52, 44, 36, 28, 20, 12, 4,
+            62, 54, 46, 38, 30, 22, 14, 6,
+            64, 56, 48, 40, 32, 24, 16, 8,
+            57, 49, 41, 33, 25, 17, 9,  1,
+            59, 51, 43, 35, 27, 19, 11, 3,
+            61, 53, 45, 37, 29, 21, 13, 5,
+            63, 55, 47, 39, 31, 23, 15, 7
+    };
+
+//    private static final int[]
+    //  Index w BigInt oznacza którą pozycje od prawej stronu ma bit np:
+    // 1 0 1 0 1 1 0 1 1
+    // 8 7 6 5 4 3 2 1 0
+    private static long permute(int[] table, int srcWidth, long src) {
+        long dst = 0;
+        for (int i=0; i<table.length; i++) {
+            int srcPos = srcWidth - table[i];
+            dst = (dst<<1) | (src>>srcPos & 0x01);
+        }
+        return dst;
+    }
+
+    private static long getLongFromBytes(byte[] ba, int offset) {
+        long l = 0;
+        for (int i=0; i<8; i++) {
+            byte value;
+            if ((offset+i) < ba.length) {
+                value = ba[offset+i];
+            } else {
+                value = 0;
+            }
+            l = l<<8 | (value & 0xFFL);
+        }
+        return l;
+    }
+
+    private static void getBytesFromLong(byte[] ba, int offset, long l) {
+        for (int i=7; i>=0; i--) {
+            if ((offset+i) < ba.length) {
+                ba[offset+i] = (byte) (l & 0xFF);
+                l = l >> 8;
+            } else {
+                break;
+            }
+        }
+    }
+
+    private static long getLongFromBytes(byte[] ba) {
+        return getLongFromBytes(ba, 0);
+    }
+
+
     public static byte[] encrypt(byte[] key, byte[] text) throws java.io.IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(key);
-        outputStream.write(text);
-
-        return outputStream.toByteArray();
-    }
-
-    public static byte[] hexStringToByteArray(String s) throws UnsupportedEncodingException {
-        if (s == null) {
-            return null;
-        } else if (s.length() < 2) {
-            return null;
-        } else {
-            if (s.length() % 2 != 0) {
-                s += '0';
-            }
-            int dl = s.length() / 2;
-            byte[] wynik = new byte[dl];
-            for (int i = 0; i < dl; i++) {
-                wynik[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
-            }
-            return wynik;
+        //tworzenie bloków
+        byte[][] blocks = createBlocks(text);
+        //tworzenie longów do permutacji
+        long[] lBlocks = new long[blocks.length];
+        for (int i = 0; i <lBlocks.length ; i++) {
+            lBlocks[i] = getLongFromBytes(blocks[i]);
         }
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        byte rawData[] = bytes;
-        StringBuilder hexText = new StringBuilder();
-        String initialHex = null;
-        int initHexLength = 0;
-
-        for (int i = 0; i < rawData.length; i++) {
-            int positiveValue = rawData[i] & 0x000000FF;
-            initialHex = Integer.toHexString(positiveValue);
-            initHexLength = initialHex.length();
-            while (initHexLength++ < 2) {
-                hexText.append("0");
-            }
-            hexText.append(initialHex);
+        //permutacja początkowa
+        for (int i = 0; i <lBlocks.length ; i++) {
+            lBlocks[i] = permute(IP,64,lBlocks[i]);
         }
-        return hexText.toString();
+        int[] leftBlocks = new int[lBlocks.length];
+        int[] rightBlocks = new int[lBlocks.length];
+        for (int i = 0; i <lBlocks.length ; i++) {
+            leftBlocks[i] = (int)lBlocks[i] >> 32;
+            rightBlocks[i] = (int) ((int)lBlocks[i]&0xFFFFFFFFL); //32 jedynki
+        }
     }
 
 
@@ -128,5 +158,41 @@ public class Des {
             sb.append((char) tab[i]);
         }
         return sb.toString();
+    }
+
+    public static byte[] hexStringToByteArray(String s) throws UnsupportedEncodingException {
+        if (s == null) {
+            return null;
+        } else if (s.length() < 2) {
+            return null;
+        } else {
+            if (s.length() % 2 != 0) {
+                s += '0';
+            }
+            int dl = s.length() / 2;
+            byte[] wynik = new byte[dl];
+            for (int i = 0; i < dl; i++) {
+                wynik[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
+            }
+            return wynik;
+        }
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        byte rawData[] = bytes;
+        StringBuilder hexText = new StringBuilder();
+        String initialHex = null;
+        int initHexLength = 0;
+
+        for (int i = 0; i < rawData.length; i++) {
+            int positiveValue = rawData[i] & 0x000000FF;
+            initialHex = Integer.toHexString(positiveValue);
+            initHexLength = initialHex.length();
+            while (initHexLength++ < 2) {
+                hexText.append("0");
+            }
+            hexText.append(initialHex);
+        }
+        return hexText.toString();
     }
 }
