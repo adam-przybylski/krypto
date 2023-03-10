@@ -17,6 +17,17 @@ public class Des {
             63, 55, 47, 39, 31, 23, 15, 7
     };
 
+    private static final int[] FinalPerm = {
+            40, 8, 48, 16, 56, 24, 64, 32,
+            39, 7, 47, 15, 55, 23, 63, 31,
+            38, 6, 46, 14, 54, 22, 62, 30,
+            37, 5, 45, 13, 53, 21, 61, 29,
+            36, 4, 44, 12, 52, 20, 60, 28,
+            35, 3, 43, 11, 51, 19, 59, 27,
+            34, 2, 42, 10, 50, 18, 58, 26,
+            33, 1, 41, 9, 49, 17, 57, 25
+    };
+
     private static final int[] KeyPerm1 = {
             57, 49, 41, 33, 25, 17, 9,
             1, 58, 50, 42, 34, 26, 18,
@@ -153,7 +164,7 @@ public class Des {
     }
 
 
-    public static byte[] encrypt(byte[] key, byte[] block) throws java.io.IOException {
+    public static byte[] encrypt(String key, byte[] block) throws java.io.IOException {
         //tworzenie longów do permutacji
         long lBlock = getLongFromBytes(block);
         //permutacja początkowa
@@ -161,8 +172,52 @@ public class Des {
         int leftBlock = (int) (lBlock >> 32);
         int rightBlock = (int) (lBlock & 0xFFFFFFFFL); //32 jedynki
 
-        return null;
+        long[] subKeys = createSubKeys(key);
+
+        for (int i = 0; i < 16; i++) {
+            int tempBlock = leftBlock;
+            leftBlock = rightBlock;
+            rightBlock = tempBlock ^ round(rightBlock, subKeys[i]);
+        }
+
+        long result = (rightBlock&0xFFFFFFFFL)<<32 | (leftBlock&0xFFFFFFFFL);
+
+        result = permute(FinalPerm, 64, result);
+
+        byte[] byteResult = new byte[8];
+
+        getBytesFromLong(byteResult, 0, result);
+
+        return byteResult;
     }
+
+    public static byte[] decrypt(String key, byte[] block) {
+        //tworzenie longów do permutacji
+        long lBlock = getLongFromBytes(block);
+        //permutacja początkowa
+        lBlock = permute(InitialPerm, 64, lBlock);
+        int leftBlock = (int) (lBlock >> 32);
+        int rightBlock = (int) (lBlock & 0xFFFFFFFFL); //32 jedynki
+
+        long[] subKeys = createSubKeys(key);
+
+        for (int i = 0; i < 16; i++) {
+            int tempBlock = leftBlock;
+            leftBlock = rightBlock;
+            rightBlock = tempBlock ^ round(rightBlock, subKeys[15-i]);
+        }
+
+        long result = (rightBlock&0xFFFFFFFFL)<<32 | (leftBlock&0xFFFFFFFFL);
+
+        result = permute(FinalPerm, 64, result);
+
+        byte[] byteResult = new byte[8];
+
+        getBytesFromLong(byteResult, 0, result);
+
+        return byteResult;
+    }
+
 
     private static byte SubBoxValue(int boxNumber, byte value) {
         // 0x20 lewy skrajny bit 0x01 prawy skrajny bit 0x1E środkowe bity

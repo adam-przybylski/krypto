@@ -41,24 +41,29 @@ public class DesController implements Initializable {
 
     @FXML
     protected void onEncryptButtonClick() throws IOException {
-        String byteTextArray = inputTextArea.getText();
-        String byteKeyArray = inputKeyTextField.getText();
-        byte[] byteArray = byteTextArray.getBytes();
-        byte[][] byteBlocksArray = Des.createBlocks(byteArray);
+        byte[] byteTextArray = inputTextArea.getText().getBytes();
+        String stringKey = inputKeyTextField.getText();
 
-        BigInteger[] bigIntTab = Des.byteBlockArrayToBigIntArray(byteBlocksArray);
-
-        byte[][] newBlocksArray = Des.bigIntArrayToByteBlockArray(bigIntTab);
+        byte[][] byteBlocksArray = Des.createBlocks(byteTextArray);
 
 
-        outputTextArea.setText(Des.byteBlockArrayToString(newBlocksArray));
+        for (int i = 0; i < byteBlocksArray.length; i++) {
+            byteBlocksArray[i] = Des.encrypt(stringKey, byteBlocksArray[i]);
+        }
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < byteBlocksArray.length; i++) {
+            res.append(byteBlocksArray[i]);
+        }
+        String stringResult = res.toString();
+
+        outputTextArea.setText(stringResult);
     }
 
     @FXML
     protected void onDecryptButtonClick() throws IOException {
         byte[] byteTextArrray = outputTextArea.getText().getBytes();
-        byte[] byteKeyArrray = inputKeyTextField.getText().getBytes();
-        inputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArrray)));
+        String byteKeyArrray = inputKeyTextField.getText();
+        //inputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArrray)));
 
         BigInteger b = new BigInteger("1");
         BigInteger b1 = b.flipBit(0);
