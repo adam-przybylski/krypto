@@ -258,7 +258,7 @@ public class Des {
 
     public static String decryptText(String text, String key) {
         byte[] byteTextArray = HexFormat.of().parseHex(text);
-        byte[][] byteBlocksArray = Des.createBlocksForDecryption(byteTextArray);
+        byte[][] byteBlocksArray = Des.createBlocks(byteTextArray);
         Des.decrypt(byteBlocksArray, key);
 
         return byteBlocksToString(byteBlocksArray);
