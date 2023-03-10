@@ -29,10 +29,10 @@
       <TextField fx:id="inputEncryptedFileTextField" layoutX="477.0" layoutY="416.0" onAction="#onChooseEncryptedFileButtonClick" prefHeight="25.0" prefWidth="300.0" promptText="Path of file to decrypt" />
       <Button layoutX="644.0" layoutY="385.0" mnemonicParsing="false" onAction="#onChooseEncryptedFileButtonClick" text="Choose file to decrypt" />
       <Button layoutX="477.0" layoutY="385.0" mnemonicParsing="false" onAction="#onLoadEncryptedFileButtonClick" text="Load file" />
-      <TextField layoutX="27.0" layoutY="518.0" prefHeight="25.0" prefWidth="300.0" promptText="Path to save file with plaintext" />
+      <TextField fx:id="pathToSaveDecryptedFile" layoutX="27.0" layoutY="518.0" prefHeight="25.0" prefWidth="300.0" promptText="Path to save file with plaintext" />
       <TextField fx:id="pathToSaveEncryptedFile" layoutX="477.0" layoutY="518.0" prefHeight="25.0" prefWidth="300.0" promptText="Path to save encrypted file" />
-      <Button layoutX="27.0" layoutY="487.0" mnemonicParsing="false" />
-      <Button layoutX="279.0" layoutY="487.0" mnemonicParsing="false" text="Button" />
+      <Button layoutX="27.0" layoutY="487.0" mnemonicParsing="false" onAction="#onSelectPathToSaveDecryptedButtonClick" text="Select path..." />
+      <Button layoutX="210.0" layoutY="487.0" mnemonicParsing="false" onAction="#onSaveDecryptedFileButtonClick" text="Save decrypted file" />
       <Button layoutX="477.0" layoutY="487.0" mnemonicParsing="false" onAction="#onSaveEncryptedFileButtonClick" text="Save encrypted file" />
       <Button layoutX="694.0" layoutY="487.0" mnemonicParsing="false" onAction="#onSelectPathToSaveEncryptedButtonClick" text="Select path..." />
    </children>

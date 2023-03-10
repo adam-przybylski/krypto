@@ -44,6 +44,9 @@ public class DesController implements Initializable {
     @FXML
     private TextField inputEncryptedFileTextField;
 
+    @FXML
+    private TextField pathToSaveDecryptedFile;
+
     private byte[] fileInBytes;
 
     private byte[] encryptedFileInBytes;
@@ -161,10 +164,29 @@ public class DesController implements Initializable {
     }
 
     @FXML
+    protected void onSaveDecryptedFileButtonClick() throws IOException {
+        File newFile = new File(pathToSaveDecryptedFile.getText());
+        newFile.createNewFile();
+        try (FileOutputStream fos = new FileOutputStream(newFile)) {
+            fos.write(fileInBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
     protected void onSelectPathToSaveEncryptedButtonClick() {
         FileChooser fileChooser = new FileChooser();
         String path = fileChooser.showSaveDialog(backButton.getScene().getWindow()).getPath();
         pathToSaveEncryptedFile.setText(path);
+    }
+
+
+    @FXML
+    protected void onSelectPathToSaveDecryptedButtonClick(){
+        FileChooser fileChooser = new FileChooser();
+        String path = fileChooser.showSaveDialog(backButton.getScene().getWindow()).getPath();
+        pathToSaveDecryptedFile.setText(path);
     }
 
     @FXML
