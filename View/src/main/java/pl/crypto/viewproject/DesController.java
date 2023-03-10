@@ -6,8 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.HexFormat;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,84 +38,162 @@ public class DesController implements Initializable {
     @FXML
     private TextField inputFileTextField;
 
+    @FXML
+    private TextField pathToSaveEncryptedFile;
 
     @FXML
-    protected void onGenerateKeyButtonClick(){
+    private TextField inputEncryptedFileTextField;
+
+    private byte[] fileInBytes;
+
+    private byte[] encryptedFileInBytes;
+
+
+    @FXML
+    protected void onGenerateKeyButtonClick() {
         inputKeyTextField.setText(Des.generateKey());
     }
 
 
     @FXML
-    protected void onEncryptButtonClick() throws IOException {
+    protected void onEncryptButtonClick() {
         String text = inputTextArea.getText();
         String key = inputKeyTextField.getText();
 
-        String stringResult = Des.encryptText(text,key);
+        String stringResult = Des.encryptText(text, key);
 
         outputTextArea.setText(stringResult);
     }
 
     @FXML
-    protected void onDecryptButtonClick() throws IOException {
-        byte[] byteTextArray = HexFormat.of().parseHex(outputTextArea.getText()) ;
+    protected void onDecryptButtonClick() {
+        String outputText = outputTextArea.getText();
         String stringKey = inputKeyTextField.getText();
 
-        byte[][] byteBlocksArray = Des.createBlocksForDecryption(byteTextArray);
+        String result = Des.decryptText(outputText, stringKey);
 
-
-        for (int i = 0; i < byteBlocksArray.length; i++) {
-            byteBlocksArray[i] = Des.decryptBlock(stringKey, byteBlocksArray[i]);
-        }
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < byteBlocksArray.length-1; i++) {
-            res.append(new String(byteBlocksArray[i], StandardCharsets.UTF_8));
-        }
-        String stringResult = res.toString();
-//        String stringResult = new String(byteBlocksArray[0]);
-//        String stringResult = new String(byteBlocksArray[0], StandardCharsets.UTF_8);
-        inputTextArea.setText(stringResult);
+        inputTextArea.setText(result);
 
 
     }
 
     @FXML
-    protected void onChooseFileButtonClick() throws IOException {
+    protected void onChooseFileButtonClick() {
         FileChooser fileChooser = new FileChooser();
         String path = fileChooser.showOpenDialog(backButton.getScene().getWindow()).getPath();
         inputFileTextField.setText(path);
 
+//        File file = new File(inputFileTextField.getText());
+//        byte[] bytes = new byte[(int) file.length()];
+//
+//        try(FileInputStream fis = new FileInputStream(file)) {
+//            fis.read(bytes);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        String fileText = new String(bytes);
+//
+//        inputTextArea.setText(fileText);
+//
+//        File newFile = new File("new.pdf");
+//        newFile.createNewFile();
+//        try(FileOutputStream fos = new FileOutputStream(newFile)) {
+//            fos.write(bytes);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+    }
+
+
+    @FXML
+    protected void onLoadPlainTextFileButtonClick() {
         File file = new File(inputFileTextField.getText());
         byte[] bytes = new byte[(int) file.length()];
 
-        try(FileInputStream fis = new FileInputStream(file)) {
+        try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(bytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        fileInBytes = bytes;
+
         String fileText = new String(bytes);
 
         inputTextArea.setText(fileText);
+    }
 
-        File newFile = new File("new.pdf");
+    @FXML
+    protected void onEncryptFileButtonClick() {
+        String key = inputKeyTextField.getText();
+
+        encryptedFileInBytes = Des.encryptFile(fileInBytes, key);
+
+        String encryptedFile = Hex.encodeHexString(encryptedFileInBytes);
+
+        outputTextArea.setText(encryptedFile);
+
+    }
+
+    @FXML
+    protected void onDecryptFileButtonClick() {
+        String key = inputKeyTextField.getText();
+
+        fileInBytes = Des.decryptFile(encryptedFileInBytes, key);
+
+        String result = new String(fileInBytes);
+
+        inputTextArea.setText(result);
+
+    }
+
+    @FXML
+    protected void onSaveEncryptedFileButtonClick() throws IOException {
+        File newFile = new File(pathToSaveEncryptedFile.getText());
         newFile.createNewFile();
-        try(FileOutputStream fos = new FileOutputStream(newFile)) {
-            fos.write(bytes);
+        try (FileOutputStream fos = new FileOutputStream(newFile)) {
+            fos.write(encryptedFileInBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    protected void onSelectPathToSaveEncryptedButtonClick() {
+        FileChooser fileChooser = new FileChooser();
+        String path = fileChooser.showSaveDialog(backButton.getScene().getWindow()).getPath();
+        pathToSaveEncryptedFile.setText(path);
+    }
+
+    @FXML
+    protected void onChooseEncryptedFileButtonClick() {
+        FileChooser fileChooser = new FileChooser();
+        String path = fileChooser.showOpenDialog(backButton.getScene().getWindow()).getPath();
+        inputEncryptedFileTextField.setText(path);
+    }
+
+    @FXML
+    protected void onLoadEncryptedFileButtonClick() {
+        File file = new File(inputEncryptedFileTextField.getText());
+        byte[] bytes = new byte[(int) file.length()];
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(bytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        encryptedFileInBytes = bytes;
+
+        String fileText = Hex.encodeHexString(encryptedFileInBytes);
+
+        outputTextArea.setText(fileText);
     }
 
-    @FXML
-    protected void onEncryptFileButtonClick(){
 
-    }
 
-    @FXML
-    protected void onDecryptFileButtonClick(){
-
-    }
 
     @FXML
     protected void onBackButtonClick() throws IOException {

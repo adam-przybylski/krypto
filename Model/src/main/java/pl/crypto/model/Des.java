@@ -1,6 +1,5 @@
 package pl.crypto.model;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.Random;
@@ -176,8 +175,7 @@ public class Des {
     }
 
 
-    private static byte[] encryptBlock(String key, byte[] block, long[] subKeys)
-            throws java.io.IOException {
+    private static byte[] encryptBlock(byte[] block, long[] subKeys) {
         //tworzenie longów do permutacji
         long lBlock = getLongFromBytes(block);
         //permutacja początkowa
@@ -202,21 +200,79 @@ public class Des {
         return byteResult;
     }
 
-    private static void encrypt(byte[][] blocks, String key) throws IOException {
+    private static void encrypt(byte[][] blocks, String key) {
         long[] subKeys = createSubKeys(key);
         for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = Des.encryptBlock(key, blocks[i], subKeys);
+            blocks[i] = Des.encryptBlock(blocks[i], subKeys);
         }
     }
 
-    public static String encryptText(String text, String key) throws IOException {
+    public static byte[] encryptFile(byte[] data, String key) {
+        byte[][] byteBlocksArray = Des.createBlocks(data);
+        encrypt(byteBlocksArray, key);
+
+        byte[] byteArray = new byte[byteBlocksArray.length * 8];
+        for (int i = 0; i < byteBlocksArray.length; i++) {
+            for (int j = 0; j < 8; j++) {
+                byteArray[i * 8 + j] = byteBlocksArray[i][j];
+            }
+        }
+
+        return byteArray;
+    }
+
+    public static byte[] decryptFile(byte[] data, String key) {
+        byte[][] byteBlocksArray = Des.createBlocksForDecryption(data);
+        decrypt(byteBlocksArray, key);
+
+        int padding = byteBlocksArray[byteBlocksArray.length - 1][7];
+
+        byte[] byteArray = new byte[(byteBlocksArray.length - 1) * 8 + 8 - padding];
+        for (int i = 0; i < byteBlocksArray.length - 1; i++) {
+            for (int j = 0; j < 8; j++) {
+                byteArray[i * 8 + j] = byteBlocksArray[i][j];
+            }
+        }
+
+        for (int i = 0; i < 8 - padding; i++) {
+            byteArray[(byteBlocksArray.length -1) * 8 + i] = byteBlocksArray[byteBlocksArray.length - 1][i];
+        }
+
+        return byteArray;
+    }
+
+
+    public static String encryptText(String text, String key) {
         byte[] byteTextArray = text.getBytes(StandardCharsets.UTF_8);
         byte[][] byteBlocksArray = Des.createBlocks(byteTextArray);
         Des.encrypt(byteBlocksArray, key);
         return byteBlocksToHexString(byteBlocksArray);
     }
 
-    public static byte[] decryptBlock(String key, byte[] block) {
+    public static void decrypt(byte[][] blocks, String key) {
+        long[] subKeys = createSubKeys(key);
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = Des.decryptBlock(blocks[i], subKeys);
+        }
+    }
+
+    public static String decryptText(String text, String key) {
+        byte[] byteTextArray = HexFormat.of().parseHex(text);
+        byte[][] byteBlocksArray = Des.createBlocksForDecryption(byteTextArray);
+        Des.decrypt(byteBlocksArray, key);
+
+        return byteBlocksToString(byteBlocksArray);
+    }
+
+    private static String byteBlocksToString(byte[][] blocks) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < blocks.length - 1; i++) {
+            res.append(new String(blocks[i], StandardCharsets.UTF_8));
+        }
+        return res.toString();
+    }
+
+    public static byte[] decryptBlock(byte[] block, long[] subkeys) {
         //tworzenie longów do permutacji
         long lBlock = getLongFromBytes(block);
         //permutacja początkowa
@@ -224,12 +280,10 @@ public class Des {
         int leftBlock = (int) (lBlock >> 32);
         int rightBlock = (int) (lBlock & 0xFFFFFFFFL); //32 jedynki
 
-        long[] subKeys = createSubKeys(key);
-
         for (int i = 0; i < 16; i++) {
             int tempBlock = leftBlock;
             leftBlock = rightBlock;
-            rightBlock = tempBlock ^ round(rightBlock, subKeys[15 - i]);
+            rightBlock = tempBlock ^ round(rightBlock, subkeys[15 - i]);
         }
 
         long result = (rightBlock & 0xFFFFFFFFL) << 32 | (leftBlock & 0xFFFFFFFFL);
@@ -329,10 +383,10 @@ public class Des {
     public static byte[][] createBlocksForDecryption(byte[] input) {
         int inputLen = input.length;
         // We need blocks to fit all bytes
-        int blockAmount = inputLen / 8 + 1;
+        int blockAmount = inputLen / 8;
         byte[][] result = new byte[blockAmount][8];
 
-        for (int i = 0; i < blockAmount - 1; i++) {
+        for (int i = 0; i < blockAmount; i++) {
             for (int j = 0; j < 8; j++) {
                 result[i][j] = input[8 * i + j];
             }
@@ -348,5 +402,6 @@ public class Des {
         }
         return res.toString();
     }
+
 
 }

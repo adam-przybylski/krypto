@@ -12,18 +12,28 @@
       <TextField fx:id="inputKeyTextField" layoutX="23.0" layoutY="73.0" prefHeight="25.0" prefWidth="195.0" promptText="Hexadecimal key" />
       <Button fx:id="generateKeyButton" layoutX="236.0" layoutY="73.0" mnemonicParsing="false" onAction="#onGenerateKeyButtonClick" text="Generate key" />
       <TextArea fx:id="inputTextArea" layoutX="23.0" layoutY="148.0" prefHeight="200.0" prefWidth="300.0" promptText="Text to encrypt" wrapText="true" />
-      <Button fx:id="encryptButton" layoutX="347.0" layoutY="162.0" mnemonicParsing="false" onAction="#onEncryptButtonClick" text="Encrypt text ---&gt;" />
+      <Button fx:id="encryptButton" layoutX="347.0" layoutY="148.0" mnemonicParsing="false" onAction="#onEncryptButtonClick" text="Encrypt text ---&gt;" />
       <TextArea fx:id="outputTextArea" layoutX="477.0" layoutY="148.0" prefHeight="200.0" prefWidth="300.0" promptText="Ciphertext" wrapText="true" />
-      <Button fx:id="decryptButton" layoutX="348.0" layoutY="202.0" mnemonicParsing="false" onAction="#onDecryptButtonClick" text="&lt;---Decrypt text" />
+      <Button fx:id="decryptButton" layoutX="347.0" layoutY="182.0" mnemonicParsing="false" onAction="#onDecryptButtonClick" text="&lt;---Decrypt text" />
       <Text layoutX="323.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DES Algorithm">
          <font>
             <Font size="24.0" />
          </font>
       </Text>
-      <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onBackButtonClick" text="Go back" />
-      <TextField fx:id="inputFileTextField" layoutX="23.0" layoutY="457.0" prefHeight="25.0" prefWidth="300.0" promptText="File path" />
-      <Button fx:id="chooseFileButton" layoutX="23.0" layoutY="416.0" mnemonicParsing="false" onAction="#onChooseFileButtonClick" text="Choose file to encrypt" />
-      <Button fx:id="encryptfFileButton" layoutX="363.0" layoutY="416.0" mnemonicParsing="false" onAction="#onEncryptFileButtonClick" text="Encrypt file" />
-      <Button fx:id="decryptFileButton" layoutX="361.0" layoutY="457.0" mnemonicParsing="false" onAction="#onDecryptFileButtonClick" text="Decrypt file" />
+      <Button fx:id="backButton" layoutX="23.0" layoutY="18.0" mnemonicParsing="false" onAction="#onBackButtonClick" text="Go back" />
+      <TextField fx:id="inputFileTextField" layoutX="23.0" layoutY="416.0" prefHeight="25.0" prefWidth="300.0" promptText="Path of file to encrypt" />
+      <Button fx:id="chooseFileButton" layoutX="23.0" layoutY="385.0" mnemonicParsing="false" onAction="#onChooseFileButtonClick" text="Choose file to encrypt" />
+      <Button fx:id="encryptfFileButton" layoutX="350.0" layoutY="288.0" mnemonicParsing="false" onAction="#onEncryptFileButtonClick" text="Encrypt file---&gt;" />
+      <Button fx:id="decryptFileButton" layoutX="350.0" layoutY="323.0" mnemonicParsing="false" onAction="#onDecryptFileButtonClick" text="&lt;---Decrypt file" />
+      <Button fx:id="loadPlainTextFileButton" layoutX="261.0" layoutY="385.0" mnemonicParsing="false" onAction="#onLoadPlainTextFileButtonClick" text="Load file" />
+      <TextField fx:id="inputEncryptedFileTextField" layoutX="477.0" layoutY="416.0" onAction="#onChooseEncryptedFileButtonClick" prefHeight="25.0" prefWidth="300.0" promptText="Path of file to decrypt" />
+      <Button layoutX="644.0" layoutY="385.0" mnemonicParsing="false" onAction="#onChooseEncryptedFileButtonClick" text="Choose file to decrypt" />
+      <Button layoutX="477.0" layoutY="385.0" mnemonicParsing="false" onAction="#onLoadEncryptedFileButtonClick" text="Load file" />
+      <TextField layoutX="27.0" layoutY="518.0" prefHeight="25.0" prefWidth="300.0" promptText="Path to save file with plaintext" />
+      <TextField fx:id="pathToSaveEncryptedFile" layoutX="477.0" layoutY="518.0" prefHeight="25.0" prefWidth="300.0" promptText="Path to save encrypted file" />
+      <Button layoutX="27.0" layoutY="487.0" mnemonicParsing="false" />
+      <Button layoutX="279.0" layoutY="487.0" mnemonicParsing="false" text="Button" />
+      <Button layoutX="477.0" layoutY="487.0" mnemonicParsing="false" onAction="#onSaveEncryptedFileButtonClick" text="Save encrypted file" />
+      <Button layoutX="694.0" layoutY="487.0" mnemonicParsing="false" onAction="#onSelectPathToSaveEncryptedButtonClick" text="Select path..." />
    </children>
 </Pane>
