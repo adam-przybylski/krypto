@@ -2,7 +2,6 @@ package pl.crypto.model;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Random;
 import org.apache.commons.codec.binary.Hex;
@@ -126,14 +125,12 @@ public class Des {
 
     public static String generateKey() {
         char[] hexCharArray = new char[16];
-        for (int i = 0; i < 16 ; i++) {
+        for (int i = 0; i < 16; i++) {
             int rnd = new Random().nextInt(HEX_ARRAY.length);
             hexCharArray[i] = HEX_ARRAY[rnd];
         }
         return String.valueOf(hexCharArray);
     }
-
-
 
     //    private static final int[]
     //  Index w BigInt oznacza którą pozycje od prawej stronu ma bit np:
@@ -179,15 +176,14 @@ public class Des {
     }
 
 
-    private static byte[] encryptBlock(String key, byte[] block, long[] subKeys) throws java.io.IOException {
+    private static byte[] encryptBlock(String key, byte[] block, long[] subKeys)
+            throws java.io.IOException {
         //tworzenie longów do permutacji
         long lBlock = getLongFromBytes(block);
         //permutacja początkowa
         lBlock = permute(InitialPerm, 64, lBlock);
         int leftBlock = (int) (lBlock >> 32);
         int rightBlock = (int) (lBlock & 0xFFFFFFFFL); //32 jedynki
-
-
 
         for (int i = 0; i < 16; i++) {
             int tempBlock = leftBlock;
@@ -211,14 +207,6 @@ public class Des {
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = Des.encryptBlock(key, blocks[i], subKeys);
         }
-    }
-
-    private static String byteBlocksToHexString(byte[][] blocks) {
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < blocks.length; i++) {
-            res.append(Hex.encodeHexString(blocks[i]));
-        }
-        return res.toString();
     }
 
     public static String encryptText(String text, String key) throws IOException {
@@ -350,8 +338,15 @@ public class Des {
             }
         }
 
-
         return result;
+    }
+
+    private static String byteBlocksToHexString(byte[][] blocks) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < blocks.length; i++) {
+            res.append(Hex.encodeHexString(blocks[i]));
+        }
+        return res.toString();
     }
 
 }
