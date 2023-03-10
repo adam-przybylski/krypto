@@ -1,7 +1,11 @@
 package pl.crypto.model;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HexFormat;
+import java.util.Random;
+import org.apache.commons.codec.binary.Hex;
 
 public class Des {
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -40,10 +44,10 @@ public class Des {
     };
 
     private static final int[] KeyPerm2 = {
-            14, 17, 11, 24, 1,  5,
-            3,  28, 15, 6,  21, 10,
-            23, 19, 12, 4,  26, 8,
-            16, 7,  27, 20, 13, 2,
+            14, 17, 11, 24, 1, 5,
+            3, 28, 15, 6, 21, 10,
+            23, 19, 12, 4, 26, 8,
+            16, 7, 27, 20, 13, 2,
             41, 52, 31, 37, 47, 55,
             30, 40, 51, 45, 33, 48,
             44, 49, 39, 56, 34, 53,
@@ -120,6 +124,17 @@ public class Des {
             22, 11, 4, 25
     };
 
+    public static String generateKey() {
+        char[] hexCharArray = new char[16];
+        for (int i = 0; i < 16 ; i++) {
+            int rnd = new Random().nextInt(HEX_ARRAY.length);
+            hexCharArray[i] = HEX_ARRAY[rnd];
+        }
+        return String.valueOf(hexCharArray);
+    }
+
+
+
     //    private static final int[]
     //  Index w BigInt oznacza którą pozycje od prawej stronu ma bit np:
     // 1 0 1 0 1 1 0 1 1
@@ -164,7 +179,7 @@ public class Des {
     }
 
 
-    public static byte[] encrypt(String key, byte[] block) throws java.io.IOException {
+    private static byte[] encryptBlock(String key, byte[] block, long[] subKeys) throws java.io.IOException {
         //tworzenie longów do permutacji
         long lBlock = getLongFromBytes(block);
         //permutacja początkowa
@@ -172,7 +187,7 @@ public class Des {
         int leftBlock = (int) (lBlock >> 32);
         int rightBlock = (int) (lBlock & 0xFFFFFFFFL); //32 jedynki
 
-        long[] subKeys = createSubKeys(key);
+
 
         for (int i = 0; i < 16; i++) {
             int tempBlock = leftBlock;
@@ -180,7 +195,7 @@ public class Des {
             rightBlock = tempBlock ^ round(rightBlock, subKeys[i]);
         }
 
-        long result = (rightBlock&0xFFFFFFFFL)<<32 | (leftBlock&0xFFFFFFFFL);
+        long result = (rightBlock & 0xFFFFFFFFL) << 32 | (leftBlock & 0xFFFFFFFFL);
 
         result = permute(FinalPerm, 64, result);
 
@@ -191,7 +206,29 @@ public class Des {
         return byteResult;
     }
 
-    public static byte[] decrypt(String key, byte[] block) {
+    private static void encrypt(byte[][] blocks, String key) throws IOException {
+        long[] subKeys = createSubKeys(key);
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = Des.encryptBlock(key, blocks[i], subKeys);
+        }
+    }
+
+    private static String byteBlocksToHexString(byte[][] blocks) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < blocks.length; i++) {
+            res.append(Hex.encodeHexString(blocks[i]));
+        }
+        return res.toString();
+    }
+
+    public static String encryptText(String text, String key) throws IOException {
+        byte[] byteTextArray = text.getBytes(StandardCharsets.UTF_8);
+        byte[][] byteBlocksArray = Des.createBlocks(byteTextArray);
+        Des.encrypt(byteBlocksArray, key);
+        return byteBlocksToHexString(byteBlocksArray);
+    }
+
+    public static byte[] decryptBlock(String key, byte[] block) {
         //tworzenie longów do permutacji
         long lBlock = getLongFromBytes(block);
         //permutacja początkowa
@@ -204,10 +241,10 @@ public class Des {
         for (int i = 0; i < 16; i++) {
             int tempBlock = leftBlock;
             leftBlock = rightBlock;
-            rightBlock = tempBlock ^ round(rightBlock, subKeys[15-i]);
+            rightBlock = tempBlock ^ round(rightBlock, subKeys[15 - i]);
         }
 
-        long result = (rightBlock&0xFFFFFFFFL)<<32 | (leftBlock&0xFFFFFFFFL);
+        long result = (rightBlock & 0xFFFFFFFFL) << 32 | (leftBlock & 0xFFFFFFFFL);
 
         result = permute(FinalPerm, 64, result);
 
@@ -252,7 +289,7 @@ public class Des {
     }
 
     private static long[] createSubKeys(String key) {
-        byte[] byteKey = key.getBytes();
+        byte[] byteKey = HexFormat.of().parseHex(key);
         long lKey = getLongFromBytes(byteKey);
         //permutacja klucza; wyrzucenie bitów parzystości
         lKey = permute(KeyPerm1, 64, lKey);
@@ -279,42 +316,6 @@ public class Des {
         return subKeys;
     }
 
-    public static BigInteger[] byteBlockArrayToBigIntArray(byte[][] input) {
-        BigInteger[] bigIntArray = new BigInteger[input.length];
-        for (int i = 0; i < input.length; i++) {
-            bigIntArray[i] = new BigInteger(input[i]);
-        }
-        return bigIntArray;
-    }
-
-    public static byte[][] bigIntArrayToByteBlockArray(BigInteger[] input) {
-        byte[][] byteBlockArray = new byte[input.length][8];
-        for (int i = 0; i < input.length; i++) {
-            byteBlockArray[i] = input[i].toByteArray();
-        }
-        return byteBlockArray;
-    }
-
-    public static String byteBlockArrayToString(byte[][] input) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < input.length - 1; i++) {
-            builder.append(new String(input[i]));
-        }
-
-        int numberOfZeros = input[input.length - 1][7];
-
-        //obcięcie zer i dodanie pozostałych bajtów
-        byte[] lastBytes = new byte[8 - numberOfZeros];
-
-        for (int i = 0; i < 8 - numberOfZeros; i++) {
-            lastBytes[i] = input[input.length - 1][i];
-        }
-
-        builder.append(new String(lastBytes));
-        return builder.toString();
-    }
-
 
     public static byte[][] createBlocks(byte[] input) {
         int inputLen = input.length;
@@ -337,59 +338,20 @@ public class Des {
         return result;
     }
 
+    public static byte[][] createBlocksForDecryption(byte[] input) {
+        int inputLen = input.length;
+        // We need blocks to fit all bytes
+        int blockAmount = inputLen / 8 + 1;
+        byte[][] result = new byte[blockAmount][8];
 
-    //konwertuje stringa na BigIntegera
-    public static BigInteger stringToBigInt(String str) {
-        byte[] tab = new byte[str.length()];
-        for (int i = 0; i < tab.length; i++) {
-            tab[i] = (byte) str.charAt(i);
-        }
-        return new BigInteger(1, tab);
-    }
-
-    //konwertuje BigIntegera na string
-    public static String bigIntToString(BigInteger n) {
-        byte[] tab = n.toByteArray();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < tab.length; i++) {
-            sb.append((char) tab[i]);
-        }
-        return sb.toString();
-    }
-
-    public static byte[] hexStringToByteArray(String s) throws UnsupportedEncodingException {
-        if (s == null) {
-            return null;
-        } else if (s.length() < 2) {
-            return null;
-        } else {
-            if (s.length() % 2 != 0) {
-                s += '0';
+        for (int i = 0; i < blockAmount - 1; i++) {
+            for (int j = 0; j < 8; j++) {
+                result[i][j] = input[8 * i + j];
             }
-            int dl = s.length() / 2;
-            byte[] wynik = new byte[dl];
-            for (int i = 0; i < dl; i++) {
-                wynik[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16);
-            }
-            return wynik;
         }
+
+
+        return result;
     }
 
-    public static String bytesToHex(byte[] bytes) {
-        byte rawData[] = bytes;
-        StringBuilder hexText = new StringBuilder();
-        String initialHex = null;
-        int initHexLength = 0;
-
-        for (int i = 0; i < rawData.length; i++) {
-            int positiveValue = rawData[i] & 0x000000FF;
-            initialHex = Integer.toHexString(positiveValue);
-            initHexLength = initialHex.length();
-            while (initHexLength++ < 2) {
-                hexText.append("0");
-            }
-            hexText.append(initialHex);
-        }
-        return hexText.toString();
-    }
 }

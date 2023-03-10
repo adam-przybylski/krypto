@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URL;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.codec.binary.Hex;
 import pl.crypto.model.Des;
 
 public class DesController implements Initializable {
@@ -39,35 +40,44 @@ public class DesController implements Initializable {
     @FXML
     private TextField inputFileTextField;
 
+
+    @FXML
+    protected void onGenerateKeyButtonClick(){
+        inputKeyTextField.setText(Des.generateKey());
+    }
+
+
     @FXML
     protected void onEncryptButtonClick() throws IOException {
-        byte[] byteTextArray = inputTextArea.getText().getBytes();
-        String stringKey = inputKeyTextField.getText();
+        String text = inputTextArea.getText();
+        String key = inputKeyTextField.getText();
 
-        byte[][] byteBlocksArray = Des.createBlocks(byteTextArray);
-
-
-        for (int i = 0; i < byteBlocksArray.length; i++) {
-            byteBlocksArray[i] = Des.encrypt(stringKey, byteBlocksArray[i]);
-        }
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < byteBlocksArray.length; i++) {
-            res.append(byteBlocksArray[i]);
-        }
-        String stringResult = res.toString();
+        String stringResult = Des.encryptText(text,key);
 
         outputTextArea.setText(stringResult);
     }
 
     @FXML
     protected void onDecryptButtonClick() throws IOException {
-        byte[] byteTextArrray = outputTextArea.getText().getBytes();
-        String byteKeyArrray = inputKeyTextField.getText();
-        //inputTextArea.setText(new String(Des.encrypt(byteTextArrray, byteKeyArrray)));
+        byte[] byteTextArray = HexFormat.of().parseHex(outputTextArea.getText()) ;
+        String stringKey = inputKeyTextField.getText();
 
-        BigInteger b = new BigInteger("1");
-        BigInteger b1 = b.flipBit(0);
-        BigInteger b2 = b.flipBit(1);
+        byte[][] byteBlocksArray = Des.createBlocksForDecryption(byteTextArray);
+
+
+        for (int i = 0; i < byteBlocksArray.length; i++) {
+            byteBlocksArray[i] = Des.decryptBlock(stringKey, byteBlocksArray[i]);
+        }
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < byteBlocksArray.length-1; i++) {
+            res.append(new String(byteBlocksArray[i], StandardCharsets.UTF_8));
+        }
+        String stringResult = res.toString();
+//        String stringResult = new String(byteBlocksArray[0]);
+//        String stringResult = new String(byteBlocksArray[0], StandardCharsets.UTF_8);
+        inputTextArea.setText(stringResult);
+
+
     }
 
     @FXML
