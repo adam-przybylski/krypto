@@ -202,10 +202,12 @@ public class Des {
         //permutacja klucza; wyrzucenie bitów parzystości
         lKey = permute(KeyPerm1, 64, lKey);
         long[] subKeys = new long[16];
+        //podział klucza 56 bit na połówki 28 bit
         int l = (int) (lKey >> 28);
         int r = (int) (lKey & 0xFFFFFFF);
 
         for (int i = 0; i < 16; i++) {
+            //przepisywanie 1 albo dwóch bitów z lewej strony na prawą
             if (Rotations[i] == 1) {
                 l = ((l << 1) & 0x0FFFFFF) | (l >> 27);
                 r = ((r << 1) & 0x0FFFFFF) | (r >> 27);
@@ -213,8 +215,9 @@ public class Des {
                 l = ((l << 2) & 0x0FFFFFF) | (l >> 26);
                 r = ((r << 2) & 0x0FFFFFF) | (r >> 26);
             }
+            //łączenie połówek z jeden podklucz 56 bit
             long subkey = (l & 0xFFFFFFFFL) << 28 | (r & 0xFFFFFFFFL);
-
+            //permutacja podklucza z 56 bit na 48 bit
             subKeys[i] = permute(KeyPerm2, 56, subkey);
         }
 
