@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -60,8 +61,13 @@ public class DesController implements Initializable {
 
     @FXML
     protected void onEncryptButtonClick() {
-        String text = inputTextArea.getText();
         String key = inputKeyTextField.getText();
+        if(key.length()<16){
+            CustomAlert.showAlert(Alert.AlertType.ERROR,"Error","Key is too short");
+            return;
+        }
+        String text = inputTextArea.getText();
+
 
         String stringResult = Des.encryptText(text, key);
 
@@ -69,10 +75,13 @@ public class DesController implements Initializable {
     }
 
     @FXML
-    protected void onDecryptButtonClick() {
-        String outputText = outputTextArea.getText();
+    protected void onDecryptButtonClick()  {
         String stringKey = inputKeyTextField.getText();
-
+        if(stringKey.length()<16){
+            CustomAlert.showAlert(Alert.AlertType.ERROR,"Error","Key is too short");
+            return;
+        }
+        String outputText = outputTextArea.getText();
         String result = Des.decryptText(outputText, stringKey);
 
         inputTextArea.setText(result);
@@ -85,27 +94,6 @@ public class DesController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         String path = fileChooser.showOpenDialog(backButton.getScene().getWindow()).getPath();
         inputFileTextField.setText(path);
-
-//        File file = new File(inputFileTextField.getText());
-//        byte[] bytes = new byte[(int) file.length()];
-//
-//        try(FileInputStream fis = new FileInputStream(file)) {
-//            fis.read(bytes);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        String fileText = new String(bytes);
-//
-//        inputTextArea.setText(fileText);
-//
-//        File newFile = new File("new.pdf");
-//        newFile.createNewFile();
-//        try(FileOutputStream fos = new FileOutputStream(newFile)) {
-//            fos.write(bytes);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
 
     }
 
@@ -131,7 +119,10 @@ public class DesController implements Initializable {
     @FXML
     protected void onEncryptFileButtonClick() {
         String key = inputKeyTextField.getText();
-
+        if(key.length()<16){
+            CustomAlert.showAlert(Alert.AlertType.ERROR,"Error","Key is too short");
+            return;
+        }
         encryptedFileInBytes = Des.encryptFile(fileInBytes, key);
 
         String encryptedFile = Hex.encodeHexString(encryptedFileInBytes);
@@ -143,7 +134,10 @@ public class DesController implements Initializable {
     @FXML
     protected void onDecryptFileButtonClick() {
         String key = inputKeyTextField.getText();
-
+        if(key.length()<16){
+            CustomAlert.showAlert(Alert.AlertType.ERROR,"Error","Key is too short");
+            return;
+        }
         fileInBytes = Des.decryptFile(encryptedFileInBytes, key);
 
         String result = new String(fileInBytes);
