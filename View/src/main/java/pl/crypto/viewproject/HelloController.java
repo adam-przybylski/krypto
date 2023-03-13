@@ -1,3 +1,8 @@
+//Autorzy
+//Jakub Pazio 242489
+//Adam Przybylski 242506
+
+
 package pl.crypto.viewproject;
 
 import java.io.IOException;

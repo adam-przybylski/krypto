@@ -1,3 +1,7 @@
+//Autorzy
+//Jakub Pazio 242489
+//Adam Przybylski 242506
+
 package pl.crypto.model;
 
 import java.nio.charset.StandardCharsets;
@@ -131,10 +135,6 @@ public class Des {
         return String.valueOf(hexCharArray);
     }
 
-    //    private static final int[]
-    //  Index w BigInt oznacza którą pozycje od prawej stronu ma bit np:
-    // 1 0 1 0 1 1 0 1 1
-    // 8 7 6 5 4 3 2 1 0
     private static long permute(int[] table, int srcWidth, long src) {
         long dst = 0;
         for (int i = 0; i < table.length; i++) {
@@ -341,7 +341,7 @@ public class Des {
         int r = (int) (lKey & 0xFFFFFFF);
 
         for (int i = 0; i < 16; i++) {
-            //przepisywanie 1 albo dwóch bitów z lewej strony na prawą
+            //przepisywanie 1 albo 2 bitów z lewej strony na prawą
             if (Rotations[i] == 1) {
                 l = ((l << 1) & 0x0FFFFFF) | (l >> 27);
                 r = ((r << 1) & 0x0FFFFFF) | (r >> 27);
@@ -349,7 +349,7 @@ public class Des {
                 l = ((l << 2) & 0x0FFFFFF) | (l >> 26);
                 r = ((r << 2) & 0x0FFFFFF) | (r >> 26);
             }
-            //łączenie połówek z jeden podklucz 56 bit
+            //łączenie połówek w jeden podklucz 56 bit
             long subkey = (l & 0xFFFFFFFFL) << 28 | (r & 0xFFFFFFFFL);
             //permutacja podklucza z 56 bit na 48 bit
             subKeys[i] = permute(KeyPerm2, 56, subkey);
@@ -381,8 +381,8 @@ public class Des {
     }
 
     public static byte[][] createBlocksForDecryption(byte[] input) {
+        //ta metoda nie tworzy paddingu
         int inputLen = input.length;
-        // We need blocks to fit all bytes
         int blockAmount = inputLen / 8;
         byte[][] result = new byte[blockAmount][8];
 
