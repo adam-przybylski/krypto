@@ -29,4 +29,10 @@ public class HelloController {
         Stage stage = (Stage) des.getScene().getWindow();
         HelloApplication.switchScene(stage, "des-window.fxml");
     }
+
+    @FXML
+    protected void onSchnorrButtonClick() throws IOException {
+        Stage stage = (Stage) des.getScene().getWindow();
+        HelloApplication.switchScene(stage, "schnorr-window.fxml");
+    }
 }
