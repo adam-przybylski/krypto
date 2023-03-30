@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.crypto.viewproject.SchnorrController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.crypto.viewproject.SchnorrController">
    <children>
       <TextField fx:id="qField" layoutX="21.0" layoutY="55.0" prefHeight="25.0" prefWidth="467.0" promptText="q" />
       <Button fx:id="generateKeyButton" layoutX="356.0" layoutY="221.0" mnemonicParsing="false" onAction="#onGenerateKeysButtonClick" text="Generate keys" />
@@ -39,5 +36,11 @@
       <TextField fx:id="pField" layoutX="21.0" layoutY="179.0" prefHeight="25.0" prefWidth="467.0" promptText="p" />
       <Button layoutX="357.0" layoutY="362.0" mnemonicParsing="false" onAction="#onSignFileButtonClick" text="Sign file ---&gt;" />
       <Button layoutX="355.0" layoutY="396.0" mnemonicParsing="false" onAction="#onVerifyFileButtonClick" text="&lt;--- Verify file" />
+      <TextField fx:id="pathOfKeysFile" layoutX="553.0" layoutY="104.0" prefHeight="25.0" prefWidth="225.0" promptText="Path of keys file" />
+      <TextField fx:id="pathToSaveKeyFile" layoutX="553.0" layoutY="179.0" prefHeight="25.0" prefWidth="225.0" promptText="Path to save keys file" />
+      <Button layoutX="552.0" layoutY="73.0" mnemonicParsing="false" onAction="#onLoadKeyFileButtonClick" text="Load file" />
+      <Button layoutX="675.0" layoutY="73.0" mnemonicParsing="false" onAction="#onChooseKeyFileButtonClick" text="Choose keys file" />
+      <Button layoutX="552.0" layoutY="147.0" mnemonicParsing="false" onAction="#onSaveKeyFileButtonClick" text="Save file" />
+      <Button layoutX="693.0" layoutY="147.0" mnemonicParsing="false" onAction="#onSelectPathToSaveKeyButtonClick" text="Select path..." />
    </children>
 </Pane>

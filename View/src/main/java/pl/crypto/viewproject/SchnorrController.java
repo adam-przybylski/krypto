@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -56,6 +57,13 @@ public class SchnorrController implements Initializable {
 
     @FXML
     private TextField inputFileTextField;
+
+
+    @FXML
+    private TextField pathOfKeysFile;
+
+    @FXML
+    private TextField pathToSaveKeyFile;
 
 
     @FXML
@@ -132,8 +140,8 @@ public class SchnorrController implements Initializable {
     protected void onVerifyFileButtonClick() {
         setKeys();
         int s1Length = 0;
-        for (int i = 0; i <signedFileInBytes.length ; i++) {
-            if(signedFileInBytes[i] == 0 && signedFileInBytes[i+1] == 0){
+        for (int i = 0; i < signedFileInBytes.length; i++) {
+            if (signedFileInBytes[i] == 0 && signedFileInBytes[i + 1] == 0) {
                 s1Length = i;
                 break;
             }
@@ -212,6 +220,48 @@ public class SchnorrController implements Initializable {
         String fileText = new String(fileInBytes);
 
         inputTextArea.setText(fileText);
+    }
+
+
+    @FXML
+    protected void onLoadKeyFileButtonClick() {
+        byte[] keyFileInBytes = Dao.readFile(pathOfKeysFile.getText());
+        String keyFile = new String(keyFileInBytes);
+        String[] keys = keyFile.split("\n");
+        qField.setText(keys[0]);
+        pField.setText(keys[1]);
+        publicKeyField.setText(keys[2]);
+        privateKeyField.setText(keys[3]);
+        hField.setText(keys[4]);
+    }
+
+
+    @FXML
+    protected void onChooseKeyFileButtonClick() {
+        FileChooser fileChooser = new FileChooser();
+        String path = fileChooser.showOpenDialog(backButton.getScene().getWindow()).getPath();
+        pathOfKeysFile.setText(path);
+    }
+
+
+    @FXML
+    protected void onSaveKeyFileButtonClick() throws IOException {
+        String q = qField.getText() + "\n";
+        String p = pField.getText() + "\n";
+        String publicKey = publicKeyField.getText() + "\n";
+        String privateKey = privateKeyField.getText() + "\n";
+        String h = hField.getText() + "\n";
+        String keyFile = q + p + publicKey + privateKey + h;
+        byte[] keyFileInBytes = keyFile.getBytes();
+        Dao.writeFile(pathToSaveKeyFile.getText(), keyFileInBytes);
+    }
+
+
+    @FXML
+    protected void onSelectPathToSaveKeyButtonClick() {
+        FileChooser fileChooser = new FileChooser();
+        String path = fileChooser.showSaveDialog(backButton.getScene().getWindow()).getPath();
+        pathToSaveKeyFile.setText(path);
     }
 
 
