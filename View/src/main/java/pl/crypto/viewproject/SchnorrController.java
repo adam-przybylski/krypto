@@ -127,11 +127,12 @@ public class SchnorrController implements Initializable {
                 Schnorr.bigInttoHexString(sign[0]) + "\n" + Schnorr.bigInttoHexString(sign[1]));
         byte[] s1 = sign[0].toByteArray();
         byte[] s2 = sign[1].toByteArray();
-        signedFileInBytes = new byte[s1.length + s2.length + 2];
+        signedFileInBytes = new byte[s1.length + s2.length + 1];
         System.arraycopy(s1, 0, signedFileInBytes, 0, s1.length);
-        signedFileInBytes[s1.length] = 0;
-        signedFileInBytes[s1.length + 1] = 0;
-        System.arraycopy(s2, 0, signedFileInBytes, s1.length + 2, s2.length);
+//        signedFileInBytes[s1.length] = 0;
+//        signedFileInBytes[s1.length + 1] = 0;
+        System.arraycopy(s2, 0, signedFileInBytes, s1.length, s2.length);
+        signedFileInBytes[s1.length+s2.length] = (byte) s2.length;
 
     }
 
@@ -139,17 +140,17 @@ public class SchnorrController implements Initializable {
     @FXML
     protected void onVerifyFileButtonClick() {
         setKeys();
-        int s1Length = 0;
-        for (int i = 0; i < signedFileInBytes.length; i++) {
-            if (signedFileInBytes[i] == 0 && signedFileInBytes[i + 1] == 0) {
-                s1Length = i;
-                break;
-            }
-        }
-        byte[] s1 = new byte[s1Length];
-        byte[] s2 = new byte[signedFileInBytes.length - s1Length - 2];
-        System.arraycopy(signedFileInBytes, 0, s1, 0, s1Length);
-        System.arraycopy(signedFileInBytes, s1Length + 2, s2, 0, s2.length);
+        int s2Length = signedFileInBytes[signedFileInBytes.length-1];
+//        for (int i = 0; i < signedFileInBytes.length; i++) {
+//            if (signedFileInBytes[i] == 0 && signedFileInBytes[i + 1] == 0) {
+//                s2Length = i;
+//                break;
+//            }
+//        }
+        byte[] s1 = new byte[signedFileInBytes.length-s2Length-1];
+        byte[] s2 = new byte[s2Length];
+        System.arraycopy(signedFileInBytes, 0, s1, 0, s1.length);
+        System.arraycopy(signedFileInBytes, s1.length, s2, 0, s2Length);
         BigInteger s1BigInt = new BigInteger(s1);
         BigInteger s2BigInt = new BigInteger(s2);
         if (Schnorr.verify(fileInBytes, s1BigInt, s2BigInt)) {
